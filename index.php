@@ -1,4 +1,5 @@
 <?php
+$cache_file=""; $expires=""; $purge_cache=""; $request_limit=""; $_SESSION['views']=true;
 
 if (!$cache_file) $cache_file = dirname(__FILE__) . '/api-cache.json';
 if (!$expires) $expires = time() - 1 * 60 * 60;
