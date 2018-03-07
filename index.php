@@ -3,7 +3,10 @@ $cache_file=""; $expires=""; $purge_cache=""; $request_limit=""; $_SESSION['view
 
 if (!$cache_file) $cache_file = dirname(__FILE__) . '/api-cache.json';
 if (!$expires) $expires = time() - 1 * 60 * 60;
-if (!file_exists($cache_file)) die("Cache file is missing: $cache_file");
+if (!file_exists($cache_file)) {
+    $create_file = fopen($cache_file, "w");
+    $create_file = file_get_contents('http://openweathermap.org/data/2.5/weather?id=524901&appid=b6907d289e10d714a6e88b30761fae22');
+}
 // Check that the file is older than the expire time and that it's not empty
 if (filectime($cache_file) < $expires || file_get_contents($cache_file) == '' || $purge_cache && intval($_SESSION['views']) <= $request_limit) {
     // File is too old, refresh cache
