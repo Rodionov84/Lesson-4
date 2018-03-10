@@ -1,30 +1,25 @@
 <?php
-$cache_file=""; $expires=""; $purge_cache=""; $request_limit=""; $_SESSION['views']=true;
+$cache_file = dirname(__FILE__) . '/api-cache.json'; // Specify the path to the cache file and its name
+$expires = time() - 1 * 60 * 60;
+$api_url="http://openweathermap.org/data/2.5/weather?id=524901&appid=b6907d289e10d714a6e88b30761fae22";
 
-if (!$cache_file) $cache_file = dirname(__FILE__) . '/api-cache.json';
-if (!$expires) $expires = time() - 1 * 60 * 60;
 if (!file_exists($cache_file)) {
     $create_file = fopen($cache_file, "w");
-    $create_file = file_get_contents('http://openweathermap.org/data/2.5/weather?id=524901&appid=b6907d289e10d714a6e88b30761fae22');
+    $create_file = file_get_contents($api_url);
 }
 // Check that the file is older than the expire time and that it's not empty
-if (filectime($cache_file) < $expires || file_get_contents($cache_file) == '' || $purge_cache && intval($_SESSION['views']) <= $request_limit) {
+if (filectime($cache_file) < $expires || file_get_contents($cache_file) == '') {
     // File is too old, refresh cache
-    $api_results = file_get_contents('http://openweathermap.org/data/2.5/weather?id=524901&appid=b6907d289e10d714a6e88b30761fae22');
+    $api_results = file_get_contents($api_url);
     $json_results = json_encode($api_results);
     // Remove cache file on error to avoid writing wrong xml
-    if ($api_results && $json_results)
+    if ($api_results && $json_results) {
         file_put_contents($cache_file, $json_results);
+    }
     else
         unlink($cache_file);
-} else {
-    // Check for the number of purge cache requests to avoid abuse
-    if (intval($_SESSION['views']) >= $request_limit)
-        $limit_reached = " <span class='error'>Request limit reached ($request_limit). Please try purging the cache later.</span>";
-    // Fetch cache
-    $json_results = file_get_contents($cache_file);
-    $request_type = 'JSON';
 }
+$json_results = file_get_contents($cache_file);
 
 $a = json_decode($json_results);
 $api = json_decode($a, true);
@@ -50,9 +45,6 @@ $pressure = $api ['main'] ['pressure'];
             font-weight: 900;
         }
 
-        .error {
-            color: red;
-        }
     </style>
     <title>Lesson-4</title>
 </head>
