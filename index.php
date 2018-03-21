@@ -1,7 +1,10 @@
 <?php
+$city_id = 524901;
+$app_id = "b6907d289e10d714a6e88b30761fae22";
+
 $cache_file = dirname(__FILE__) . '/api-cache.json'; // Specify the path to the cache file and its name
 $expires = time() - 1 * 60 * 60;
-$api_url="http://openweathermap.org/data/2.5/weather?id=524901&appid=b6907d289e10d714a6e88b30761fae22";
+$api_url = "http://openweathermap.org/data/2.5/weather?id=" . $city_id . "&appid=" . $app_id;
 
 if (!file_exists($cache_file)) {
     $create_file = fopen($cache_file, "w");
@@ -16,8 +19,9 @@ if (filectime($cache_file) < $expires || file_get_contents($cache_file) == '') {
     if ($api_results && $json_results) {
         file_put_contents($cache_file, $json_results);
     }
-    else
+    else {
         unlink($cache_file);
+    }
 }
 $json_results = file_get_contents($cache_file);
 
